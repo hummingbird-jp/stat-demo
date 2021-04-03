@@ -14,11 +14,24 @@ let maskType = 'room';
 
 // ------- bodypix -------
 async function loadModel() {
-	const net = await bodyPix.load(/** optional arguments, see below **/);
+	// using ResNet (new) version
+	// if smaller, faster, less accurate version is required: use MobileNet version
+	const net = await bodyPix.load({
+		architecture: 'ResNet50',
+		outputStride: 32,
+		quantBytes: 2
+	});
+	//const net = await bodyPix.load({
+	//	architecture: 'MobileNetV1',
+	//	outputStride: 16,
+	//	multiplier: 0.75,
+	//	quantBytes: 2
+	//  });
 	bodyPixNet = net;
 	console.log('bodyPix ready');
 	updateUI();
 }
+
 loadModel();
 
 function setMask(type) {
@@ -136,7 +149,6 @@ function drawCanvas(srcElement) {
 }
 
 // -------- user media -----------
-
 async function startVideo() {
 	//const mediaConstraints = {video: true, audio: true};
 	//const mediaConstraints = {video: true, audio: false};
