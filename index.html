@@ -1,37 +1,11 @@
-<!DOCTYPE html>
 <html>
+	<head>
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet"></script>
+	</head>
 
-<head>
-	<title>BodyPix</title>
-	<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.2"></script>
-	<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
-</head>
-
-<body>
-	Run on Chrome 78, using <a href="https://github.com/tensorflow/tfjs-models/tree/master/body-pix">BodyPix</a>
-	<div>
-		<button id="start_video_button" onclick="startVideo()">Start Video</button>
-		<button id="stop_video_button" onclick="stopVideo()">Stop Video</button>
-		&nbsp;
-		<span id="mask_radio_broup">
-			<input type="radio" name="mask" value="mask_room" checked="1" onclick="setMask('room')">mask background</input>
-			<input type="radio" name="mask" value="mask_person" onclick="setMask('person')">mask person</input>
-			<input type="radio" name="mask" value="no_mask" onclick="setMask('none')">no mask</input>
-		</span>
-		<button id="start_canvas_button" onclick="startCanvasVideo()" style="display: none;">start Canvas Video</button>
-		<button id="stop_canvas_button" onclick="stopCanvasVideo()" style="display: none;">stop Canvas Video</button>
-		&nbsp;
-	</div>
-	<div>
-		local video<br />
-		<video id="local_video" width="640px" height="480px"
-		style="border: solid black 1px; width:160px; height:120px"></video>
-		<br />
-		masked video<br />
-		<canvas id="canvas" width="640px" height="480px" style="border: solid 1px black; width:320px; height:240px;" />
-	</div>
+	<body>
+		<img id="human" src="/images/human.jpg " />
+	</body>
 	<script src="main.js"></script>
-	<script src="utils.js"></script>
-</body>
-
 </html>
