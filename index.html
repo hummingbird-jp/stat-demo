@@ -4,14 +4,31 @@
 		<title>Stat! Demo with tf.poseNet</title>
 		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	</head>
 	<body>
 		<div>
-			<video id="video"></video>
+			<video
+				id="video"
+				width="1080"
+				height="720"
+				autoplay
+				playsinline
+			></video>
+			<canvas id="canvas"></canvas>
+			<div id="errorMsg"></div>
+			<!--<img id="image" src="images/normal.jpg" width="30%" height="30%">-->
+			<!--<img id="image" src="images/thinking.jpg" width="30%" height="30%">-->
+			<!--<img id="image" src="images/face-only.jpg" width="30%" height="30%">-->
+			<!--<img id="image" src="images/dancing.jpg" width="30%" height="30%">-->
+			<!--<img id="image" src="images/showing-hands.jpg" width="30%" height="30%">-->
 		</div>
-		<script src="main.js"></script>
 	</body>
+	<script src="main.js"></script>
+	<script src="pose.js"></script>
+	<script src="cos-sim.js"></script>
 </html>

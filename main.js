@@ -19,18 +19,21 @@ function setupVideo() {
 	});
 }
 
-function showEstimatedKeypoints(pose) {
-	if (!pose) {
-		console.warn("Keypoints are not estimated.");
-		return;
-	}
-	console.log(pose);
-}
-
 async function estimatePoseOnVideo(videoElement) {
 	const net = await posenet.load();
 	const pose = await net.estimateSinglePose(videoElement, {
 		flipHorizontal: false
 	});
-	showEstimatedKeypoints(pose);
+
+	const result = cosSim(normal, pose);
+	console.log(result);
+	//showEstimatedKeypoints(pose.keypoints);
+}
+
+function showEstimatedKeypoints(keypoints) {
+	if (!keypoints) {
+		console.warn("Keypoints are not estimated.");
+		return;
+	}
+	console.log(keypoints);
 }
