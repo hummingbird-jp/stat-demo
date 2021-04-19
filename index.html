@@ -2,8 +2,9 @@
 <html lang="en">
 	<head>
 		<title>Stat! Demo with tf.poseNet</title>
-		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
 		<meta charset="UTF-8" />
@@ -18,8 +19,19 @@
 				height="720"
 				autoplay
 				playsinline
+				style="display: none;"
 			></video>
-			<canvas id="canvas"></canvas>
+			<canvas 
+				id="canvas"
+				width="1080"
+				height="720"
+			></canvas>
+			<canvas 
+				id="face_canvas" 
+				width="100px" 
+				height="100px" 
+				style="width:0px; height:0px;"
+			></canvas>
 			<div id="errorMsg"></div>
 			<!--<img id="image" src="images/normal.jpg" width="30%" height="30%">-->
 			<!--<img id="image" src="images/thinking.jpg" width="30%" height="30%">-->
@@ -29,6 +41,7 @@
 		</div>
 	</body>
 	<script src="main.js"></script>
+	<script src="emotion.js"></script>
 	<script src="pose.js"></script>
 	<script src="cos-sim.js"></script>
 </html>
