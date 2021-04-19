@@ -1,3 +1,33 @@
+async function estimatePoseOnVideo(videoElement) {
+	const net = await posenet.load();
+	console.log("poseNet model loaded.");
+	const pose = await net.estimateSinglePose(videoElement, {
+		flipHorizontal: false
+	});
+
+	const result = cosSim(normal, pose);
+	console.log(result);
+	showEstimatedKeypoints(pose);
+}
+
+function showEstimatedKeypoints(pose) {
+	if (!pose) {
+		console.warn("Keypoints are not estimated.");
+		return;
+	}
+	// console.log(keypoints);
+	const ctx = canvas.getContext('2d');
+	for (let j = 0; j < pose.keypoints.length; j++) {
+		const x = pose.keypoints[j].position.x;
+		const y = pose.keypoints[j].position.y;
+		ctx.fillRect(x, y, 15, 15);
+	}
+	ctx.beginPath();
+	ctx.moveTo(pose.keypoints[9].position.x,pose.keypoints[9].position.y);
+	ctx.moveTo(pose.keypoints[10].position.x,pose.keypoints[10].position.y);
+	ctx.stroke();
+}
+
 function getVecFromPose(pose, vecSize) {
 	let vec = new Array;
 	let xBase;
