@@ -28,24 +28,24 @@ async function drawBlaze(srcElement) {
 				}
 			}
 
-            ctx.drawImage(videoElement,0,0,1080,720)
+			ctx.drawImage(videoElement, 0, 0, 1080, 720)
 
 			const start = predictions[i].topLeft;
 			const end = predictions[i].bottomRight;
 			const size = [end[0] - start[0], end[1] - start[1]];
-			ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
-			ctx.fillRect(start[0], start[1], size[0], size[1]);
+			//ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+			//ctx.fillRect(start[0], start[1], size[0], size[1]);
 
 
 			if (annotateBoxes) {
 				const landmarks = predictions[i].landmarks;
 
-				ctx.fillStyle = "blue";
-				for (let j = 0; j < landmarks.length; j++) {
-					const x = landmarks[j][0];
-					const y = landmarks[j][1];
-					ctx.fillRect(x, y, 5, 5);
-				}
+				//ctx.fillStyle = "blue";
+				//for (let j = 0; j < landmarks.length; j++) {
+				//	const x = landmarks[j][0];
+				//	const y = landmarks[j][1];
+				//	ctx.fillRect(x, y, 5, 5);
+				//}
 			}
 
 			var faceCtx = faceCanvas.getContext('2d');
