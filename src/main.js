@@ -13,10 +13,13 @@ let emotionModel = null;
 
 setupVideo();
 loadModel();
+window.onload = function () {
+	Notification.requestPermission();
+}
 setTimeout('estimatePoseOnVideo(videoElement)', setupTime);
-setInterval(function(){
-	canvas.getContext("2d").drawImage(videoElement,0,0,1080,720);
-}, updateInterval/10);
+setInterval(function () {
+	canvas.getContext("2d").drawImage(videoElement, 0, 0, 1080, 720);
+}, updateInterval / 10);
 setInterval('estimatePoseOnVideo(videoElement)', updateInterval);
 setInterval('drawBlaze(videoElement)', updateInterval);
 
@@ -34,7 +37,7 @@ function setupVideo() {
 }
 
 async function loadModel() {
-	blazeFaceModel  = await blazeface.load();
+	blazeFaceModel = await blazeface.load();
 	console.log("blazeface ready.")
 
 	emotionModel = await tf.loadLayersModel("http://127.0.0.1:5500/src/emotion_XCEPTION/model.json")
