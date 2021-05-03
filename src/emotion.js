@@ -13,9 +13,6 @@ async function drawBlaze(srcElement) {
 		annotateBoxes
 	);
 
-	// debug
-	// console.log("predictions: ", predictions);
-
 	if (predictions.length > 0) {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -28,34 +25,21 @@ async function drawBlaze(srcElement) {
 				}
 			}
 
-			ctx.drawImage(videoElement, 0, 0, 1080, 720)
+			ctx.drawImage(srcElement, 0, 0, 1080, 720)
 
 			const start = predictions[i].topLeft;
 			const end = predictions[i].bottomRight;
 			const size = [end[0] - start[0], end[1] - start[1]];
-			//ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
-			//ctx.fillRect(start[0], start[1], size[0], size[1]);
 
+			if (annotateBoxes) { const landmarks = predictions[i].landmarks; }
 
-			if (annotateBoxes) {
-				const landmarks = predictions[i].landmarks;
+			//var faceCtx = canvas.getContext('2d');
+			//var adjust = 1 // 1080 / localVideo.width; // originalVideoWidth / video.width
+			//faceCtx.drawImage(
+			//	srcElement, start[0] * adjust, start[1] * adjust, size[0] * adjust, size[1] * adjust, 0, 0, 100, 100
+			//);
 
-				//ctx.fillStyle = "blue";
-				//for (let j = 0; j < landmarks.length; j++) {
-				//	const x = landmarks[j][0];
-				//	const y = landmarks[j][1];
-				//	ctx.fillRect(x, y, 5, 5);
-				//}
-			}
-
-			var faceCtx = faceCanvas.getContext('2d');
-			var adjust = 1 // 1080 / localVideo.width; // originalVideoWidth / video.width
-			faceCtx.drawImage(
-				srcElement, start[0] * adjust, start[1] * adjust, size[0] * adjust, size[1] * adjust, 0, 0, 100, 100
-			);
-
-			tensor_image = preprocessImage(faceCanvas);
-			// // tensor_image.print();
+			tensor_image = preprocessImage(canvas);
 
 			let emotion_prediction = await emotionModel.predict(tensor_image).data();
 			let results = Array.from(emotion_prediction)
