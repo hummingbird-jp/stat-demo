@@ -1,6 +1,8 @@
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyFMx64H58DVZURz1021L3ts_cdQ_bB3FwboYHLC2vbKAXBkSs7_P-oIOwAYRdxURhj/exec';
 const USER_NAME = 'yhakamay';
 let SECONDS_YOU_STAYED_IN_VIEW = 0;
+// async functionにPromise以外を返させる方法がわからなかったので、計算結果をとりあえずここに入れておく
+let EMOTION = '-';
 
 async function estimatePoseOnVideo(videoElement) {
 	const poseNet = await posenet.load();
@@ -9,23 +11,39 @@ async function estimatePoseOnVideo(videoElement) {
 	const similarityToThinking = cosSim(thinking, pose);
 	const result = similarityToNormal > similarityToThinking ? 'normal 🧑‍💻' : 'thinking 🤔'
 	const userName = USER_NAME;
+	const isInView = judgeIsInView(pose);
+	const red = '\u001b[31m';
+	const green = '\u001b[32m';
+	const resetColor = '\u001b[0m';
 
-	console.log(result);
-	//drawSkeltonOnCanvas(pose);
-	sendHttpReq(userName, isInView(pose), result);
+	if (!isInView) {
+		console.log(`${red}I can\'t find you 😵 ${resetColor}`);
+		SECONDS_YOU_STAYED_IN_VIEW = 0;
+		console.log(`$SECONDS_YOU_STAYED_IN_VIEW has been reset.`);
+	} else {
+		console.log(`${green}I found you! 🥳 ${resetColor}`);
+		SECONDS_YOU_STAYED_IN_VIEW++;
+		console.log(`SECONDS_YOU_STAYED_IN_VIEW: ${SECONDS_YOU_STAYED_IN_VIEW}`);
+
+		console.log(result);
+		//drawSkeltonOnCanvas(pose);
+		drawBlaze(videoElement);
+		console.log(`emotion in estimatePoseOnVideo(): ${EMOTION}`);
+	}
+	sendHttpReq(userName, isInView, result, EMOTION);
 }
 
-function sendHttpReq(userName, isInView, pose) {
+function sendHttpReq(userName, isInView, pose, emotion) {
 	const timeStamp = new Date();
 
-	fetch(getUrlForHttpReq(timeStamp, userName, isInView, pose), {
+	fetch(getUrlForHttpReq(timeStamp, userName, isInView, pose, emotion), {
 		method: 'GET',
 		mode: 'cors',
 		credentials: 'include'
 	});
 }
 
-function getUrlForHttpReq(timeStamp, userName, isInView, pose) {
+function getUrlForHttpReq(timeStamp, userName, isInView, pose, emotion) {
 	let reqUrl = WEB_APP_URL;
 
 	reqUrl += '?';
@@ -36,6 +54,8 @@ function getUrlForHttpReq(timeStamp, userName, isInView, pose) {
 	reqUrl += `isInView=${isInView}`;
 	reqUrl += '&';
 	reqUrl += `pose=${pose}`;
+	reqUrl += '&';
+	reqUrl += `emotion=${emotion}`;
 
 	return reqUrl;
 }
@@ -90,23 +110,11 @@ function drawSkeltonOnCanvas(pose) {
 	}
 }
 
-function isInView(pose) {
-	const red = '\u001b[31m';
-	const green = '\u001b[32m';
-	const resetColor = '\u001b[0m';
-
+function judgeIsInView(pose) {
 	/* 全体のscoreが0.3未満＝画面内にいない */
 	if (pose.score < 0.3) {
-		console.log(`${red}I can\'t find you 😵 ${resetColor}`);
-		SECONDS_YOU_STAYED_IN_VIEW = 0;
-		console.log(`$SECONDS_YOU_STAYED_IN_VIEW has been reset.`);
-
 		return false;
 	} else {
-		console.log(`${green}I found you! 🥳 ${resetColor}`);
-		SECONDS_YOU_STAYED_IN_VIEW++;
-		console.log(`SECONDS_YOU_STAYED_IN_VIEW: ${SECONDS_YOU_STAYED_IN_VIEW}`);
-
 		return true;
 	}
 }

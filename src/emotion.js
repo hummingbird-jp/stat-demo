@@ -31,7 +31,7 @@ async function drawBlaze(srcElement) {
 			const end = predictions[i].bottomRight;
 			const size = [end[0] - start[0], end[1] - start[1]];
 
-			if (annotateBoxes) { const landmarks = predictions[i].landmarks; }
+			//if (annotateBoxes) { const landmarks = predictions[i].landmarks; }
 
 			//var faceCtx = canvas.getContext('2d');
 			//var adjust = 1 // 1080 / localVideo.width; // originalVideoWidth / video.width
@@ -53,10 +53,11 @@ async function drawBlaze(srcElement) {
 					return b.probability - a.probability;
 				}).slice(0, 6);
 			console.log(results[0].className, results[0].probability);
+			// async functionにPromise以外を返させる方法がわからなかったので、計算結果をとりあえずここに入れておく
+			EMOTION = results[0].className;
 		}
 	}
 }
-
 
 //-----------------------
 // TensorFlow.js method
