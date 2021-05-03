@@ -1,47 +1,49 @@
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyFMx64H58DVZURz1021L3ts_cdQ_bB3FwboYHLC2vbKAXBkSs7_P-oIOwAYRdxURhj/exec';
+const USER_NAME = 'yhakamay';
 let SECONDS_YOU_STAYED_IN_VIEW = 0;
 
 async function estimatePoseOnVideo(videoElement) {
-	const net = await posenet.load();
-	const pose = await net.estimateSinglePose(videoElement, {
-		flipHorizontal: false
-	});
-
+	const poseNet = await posenet.load();
+	const pose = await poseNet.estimateSinglePose(videoElement, { flipHorizontal: false });
 	const similarityToNormal = cosSim(normal, pose);
 	const similarityToThinking = cosSim(thinking, pose);
-
 	const result = similarityToNormal > similarityToThinking ? 'normal 🧑‍💻' : 'thinking 🤔'
+	const userName = USER_NAME;
 
 	console.log(result);
-	showEstimatedKeypoints(pose);
+	//drawSkeltonOnCanvas(pose);
+	sendHttpReq(userName, isInView(pose), result);
 }
 
-function showEstimatedKeypoints(pose) {
-	const black = '\u001b[30m';
-	const red = '\u001b[31m';
-	const green = '\u001b[32m';
-	const yellow = '\u001b[33m';
-	const blue = '\u001b[34m';
-	const magenta = '\u001b[35m';
-	const cyan = '\u001b[36m';
-	const white = '\u001b[37m';
+function sendHttpReq(userName, isInView, pose) {
+	const timeStamp = new Date();
 
-	const reset = '\u001b[0m';
+	fetch(getUrlForHttpReq(timeStamp, userName, isInView, pose), {
+		method: 'GET',
+		mode: 'cors',
+		credentials: 'include'
+	});
+}
 
-	if (!pose) {
-		console.warn('Keypoints are not estimated.');
-		return;
-	} else if (pose.score < 0.3) {
-		console.warn(`${red}I can\'t find you 😵 ${reset}`);
-		SECONDS_YOU_STAYED_IN_VIEW = 0;
-		console.log(`${red}SECONDS_YOU_STAYED_IN_VIEW has been reset.${reset}`);
-		return;
-	} else {
-		console.log(`${green}I found you! 🥳 ${reset}`);
-		SECONDS_YOU_STAYED_IN_VIEW++;
-		console.log(`SECONDS_YOU_STAYED_IN_VIEW: ${SECONDS_YOU_STAYED_IN_VIEW}`);
-	}
+function getUrlForHttpReq(timeStamp, userName, isInView, pose) {
+	let reqUrl = WEB_APP_URL;
 
+	reqUrl += '?';
+	reqUrl += `timeStamp=${timeStamp}`
+	reqUrl += '&';
+	reqUrl += `userName=${userName}`;
+	reqUrl += '&';
+	reqUrl += `isInView=${isInView}`;
+	reqUrl += '&';
+	reqUrl += `pose=${pose}`;
+
+	return reqUrl;
+}
+
+function drawSkeltonOnCanvas(pose) {
 	const ctx = canvas.getContext('2d');
+
+	/* 各keypointに赤い四角を描画する */
 	for (let j = 0; j < pose.keypoints.length; j++) {
 		const x = pose.keypoints[j].position.x;
 		const y = pose.keypoints[j].position.y;
@@ -50,6 +52,7 @@ function showEstimatedKeypoints(pose) {
 		ctx.fillRect(x, y, 10, 10);
 	}
 
+	/* 上半身のkeypointsを緑の線でつなぐ */
 	for (let i = 0; i < pose.keypoints.length; i++) {
 		let xStart, yStart, xEnd, yEnd;
 
@@ -79,6 +82,7 @@ function showEstimatedKeypoints(pose) {
 				yEnd = pose.keypoints[6].position.y;
 				break;
 		}
+
 		ctx.beginPath();
 		ctx.moveTo(xStart, yStart);
 		ctx.lineTo(xEnd, yEnd);
@@ -93,6 +97,7 @@ function getVecFromPose(pose, vecSize) {
 
 	xBase = pose.keypoints[0].position.x;
 	yBase = pose.keypoints[0].position.y;
+
 	for (let i = 0; i < vecSize; i++) {
 		if (i < 17) {
 			vec[i] = pose.keypoints[i].position.x - xBase;
@@ -100,20 +105,21 @@ function getVecFromPose(pose, vecSize) {
 			vec[i] = pose.keypoints[i - 17].position.y - yBase;
 		}
 	}
+
 	// 11 (leftHip) 以降は無視
 	for (let i = 11; i < 17; i++) {
 		vec[i] = 0; // 下半身のx座標
 		vec[i + vecSize / 2] = 0; // 下半身のy座標
 	}
+
 	return vec;
 }
 
 function normalizeVec(vec, vecSize) {
 	let normalizedVec = 0.0;
 
-	for (let i = 0; i < vecSize; i++) {
-		normalizedVec += vec[i] * vec[i];
-	}
+	for (let i = 0; i < vecSize; i++) { normalizedVec += vec[i] * vec[i]; }
+
 	return Math.sqrt(normalizedVec);
 }
 
