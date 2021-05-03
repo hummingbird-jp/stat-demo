@@ -90,6 +90,27 @@ function drawSkeltonOnCanvas(pose) {
 	}
 }
 
+function isInView(pose) {
+	const red = '\u001b[31m';
+	const green = '\u001b[32m';
+	const resetColor = '\u001b[0m';
+
+	/* 全体のscoreが0.3未満＝画面内にいない */
+	if (pose.score < 0.3) {
+		console.log(`${red}I can\'t find you 😵 ${resetColor}`);
+		SECONDS_YOU_STAYED_IN_VIEW = 0;
+		console.log(`$SECONDS_YOU_STAYED_IN_VIEW has been reset.`);
+
+		return false;
+	} else {
+		console.log(`${green}I found you! 🥳 ${resetColor}`);
+		SECONDS_YOU_STAYED_IN_VIEW++;
+		console.log(`SECONDS_YOU_STAYED_IN_VIEW: ${SECONDS_YOU_STAYED_IN_VIEW}`);
+
+		return true;
+	}
+}
+
 function getVecFromPose(pose, vecSize) {
 	let vec = new Array;
 	let xBase;
