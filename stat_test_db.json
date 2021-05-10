@@ -1,0 +1,111 @@
+
+{
+  "users": {
+    "yhakamay" : {
+      "name": "Yusuke Hakamaya",
+      "groups": {
+        "allinon": true,
+        "techpioneers": true,
+        "yumekata": true,
+        "stat-dev": true
+      }
+    },
+    "rsuda": {
+      "name" : "Ryutaro Suda",
+      "groups": {
+        "allinon": true,
+        "techpioneers": true,
+        "stat-dev": true,
+        "cybergeeks": true
+      }
+    },
+    "naoyama" : {
+      "name" : "Natsumi Aoyama",
+      "groups": {
+        "allinon": true,
+        "techpioneers": true,
+        "stat-dev": true,
+        "cybergeeks": true
+      }
+    },
+    "alovelace-1278" : {
+      "name" : "Ada Lovelace",
+      "groups": {
+        "allinon": true,
+        "techpioneers": true,
+        "stat-dev": true,
+        "cybergeeks": true
+      }
+    },
+    "mario_wow" : {
+      "name" : "Me Mario",
+      "groups": {
+        "allinon": true,
+        "yumekata": true
+      }
+    }
+  },
+  "groups":{
+    "allinon": {
+      "name": "We are the one",
+      "members": {
+        "yhakamay": true,
+        "rsuda": true,
+        "naoyama": true,
+        "alovelace-1278": true,
+        "mario_wow": true
+      }
+    },
+    "techpioneers": {
+      "name": "Historical Tech Pioneers",
+      "members": {
+        "yhakamay": true,
+        "rsuda": true,
+        "naoyama": true,
+        "alovelace-1278": true
+      }
+    },
+    "yumekata": {
+      "name": "Eat and talk your dreams",
+      "members": {
+        "yhakamay": true,
+        "mario_wow": true
+      }
+    },
+    "stat-dev": {
+      "name": "Stat! Development Team",
+      "members": {
+        "yhakamay": true,
+        "rsuda": true,
+        "naoyama": true
+      }
+    },
+    "cybergeeks": {
+      "name": "Cybersecurity Geeks",
+      "members": {
+        "rsuda": true,
+        "naoyama": true,
+        "alovelace-1278": true
+      }
+    }
+  },
+  "status": {
+    "stat-dev": {
+      "s1": {
+        "name": "rsuda",
+        "timestamp": 1620563885,
+        "isInView": true,
+        "emotion": "neutral",
+        "pose": "thinking"
+      }
+    }
+  },
+  "status-present": {
+    "rsuda": {
+      "timestamp": 1620563885,
+      "isInView": true,
+      "emotion": "neutral",
+      "pose": "thinking"
+    }
+  }
+}

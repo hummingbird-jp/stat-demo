@@ -1,5 +1,5 @@
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwiBkzgDBoX1s7gnU26XgVPHFpKBPL-Cb4u8zWCJlQo_kx7trm-UzgOfWAdqc09btw/exec';
-const USER_NAME = 'yhakamay';
+const USER_NAME = 'rsuda';
 let SECONDS_YOU_STAYED_IN_VIEW = 0;
 // async functionにPromise以外を返させる方法がわからなかったので、計算結果をとりあえずここに入れておく
 let EMOTION = '-';
@@ -30,7 +30,44 @@ async function estimatePoseOnVideo(videoElement) {
 		drawBlaze(videoElement);
 		console.log(`emotion in estimatePoseOnVideo(): ${EMOTION}`);
 	}
-	sendHttpReq(userName, isInView, result, EMOTION);
+	// sendHttpReq(userName, isInView, result, EMOTION);
+	if (SECONDS_YOU_STAYED_IN_VIEW > 10) {
+		writeStatusData(USER_NAME,isInView,result,EMOTION);
+		SECONDS_YOU_STAYED_IN_VIEW = 0;
+		console.log(`SECONDS_YOU_STAYED_IN_VIEW has been reset.`);
+	}
+	if (SECONDS_YOU_STAYED_IN_VIEW == 5) {
+		readMyLatestStatus(USER_NAME);
+		console.log("debug: your status was read.")
+	}
+}
+
+function writeStatusData(userId, isInView, pose, emotion) {
+	const timestamp = new Date();
+	firebase.database().ref('status-present/' + userId).set({
+		timestamp: timestamp,
+		isInView: isInView,
+		emotion: emotion,
+		pose: pose
+	});
+}
+
+function readMyLatestStatus(userId) {
+	var myStatus = firebase.database().ref('status-present/' + userId);
+	myStatus.on('emotion', (snapshot) => {
+		const data = snapshot.val();
+		console.log(data);
+	})
+}
+
+function getTeamMembersId(userId, groupName) {
+	var teamMembers = firebase.database().ref('groups/' + groupName);
+	teamMembers.on('members', (snapshot) => {
+		const data = snapshot.val();
+		console.log(data);
+		console.log(data.userId);
+		console.log(data.name);
+	});
 }
 
 function sendHttpReq(userName, isInView, pose, emotion) {
