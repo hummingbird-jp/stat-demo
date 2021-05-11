@@ -54,7 +54,7 @@ function writeStatusData(userId, isInView, pose, emotion) {
 
 function readMyLatestStatus(userId) {
 	var myStatus = firebase.database().ref('status-present/' + userId);
-	myStatus.on('emotion', (snapshot) => {
+	myStatus.on('value',(snapshot) => {
 		const data = snapshot.val();
 		console.log(data);
 	})
@@ -62,7 +62,7 @@ function readMyLatestStatus(userId) {
 
 function getTeamMembersId(userId, groupName) {
 	var teamMembers = firebase.database().ref('groups/' + groupName);
-	teamMembers.on('members', (snapshot) => {
+	teamMembers.on('value', (snapshot) => {
 		const data = snapshot.val();
 		console.log(data);
 		console.log(data.userId);
