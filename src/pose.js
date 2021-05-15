@@ -1,4 +1,3 @@
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwiBkzgDBoX1s7gnU26XgVPHFpKBPL-Cb4u8zWCJlQo_kx7trm-UzgOfWAdqc09btw/exec';
 const USER_NAME = 'rsuda';
 let SECONDS_YOU_STAYED_IN_VIEW = 0;
 // async functionにPromise以外を返させる方法がわからなかったので、計算結果をとりあえずここに入れておく
@@ -32,18 +31,16 @@ async function estimatePoseOnVideo(videoElement) {
 	}
 	// sendHttpReq(userName, isInView, result, EMOTION);
 	if (SECONDS_YOU_STAYED_IN_VIEW > 10) {
-		writeStatusData(USER_NAME,isInView,result,EMOTION);
+		writeStatusData(userName,isInView,result,EMOTION);
 		SECONDS_YOU_STAYED_IN_VIEW = 0;
 		console.log(`SECONDS_YOU_STAYED_IN_VIEW has been reset.`);
 	}
-	if (SECONDS_YOU_STAYED_IN_VIEW == 5) {
-		readMyLatestStatus(USER_NAME);
-		console.log("debug: your status was read.")
-	}
+	isTeamInView('stat-dev');
 }
 
 function writeStatusData(userId, isInView, pose, emotion) {
-	const timestamp = new Date();
+	const timestamp = new Date().getTime();
+	console.log(timestamp);
 	firebase.database().ref('status-present/' + userId).set({
 		timestamp: timestamp,
 		isInView: isInView,
@@ -52,49 +49,44 @@ function writeStatusData(userId, isInView, pose, emotion) {
 	});
 }
 
-function readMyLatestStatus(userId) {
-	var myStatus = firebase.database().ref('status-present/' + userId);
-	myStatus.on('value',(snapshot) => {
-		const data = snapshot.val();
-		console.log(data);
+function isUserInView(userId) {
+	let lastUpdatedTS = null;
+	const now = new Date().getTime();
+	var ref = firebase.database().ref('status-present/' + userId + '/timestamp');
+	ref.on('value', (snapshot) => {
+		lastUpdatedTS = snapshot.val();
 	})
+	if (now - lastUpdatedTS < 60000){
+		return true;
+	}
+	return false;
 }
 
-function getTeamMembersId(userId, groupName) {
-	var teamMembers = firebase.database().ref('groups/' + groupName);
-	teamMembers.on('value', (snapshot) => {
-		const data = snapshot.val();
-		console.log(data);
-		console.log(data.userId);
-		console.log(data.name);
+function getTeamMembersId(groupName) {
+	let teamMembersId = [];
+	var ref = firebase.database().ref('groups/'+groupName+'/members')
+	ref.orderByValue().on("value", function(snapshot) {
+		snapshot.forEach(function(data) {
+			teamMembersId.push(data.key);
+		});
 	});
+	// console.log(teamMembersId.length + ' users found in ' + groupName + ', with id: ' + teamMembersId);
+	return teamMembersId;
 }
 
-function sendHttpReq(userName, isInView, pose, emotion) {
-	const timeStamp = new Date();
-
-	fetch(getUrlForHttpReq(timeStamp, userName, isInView, pose, emotion), {
-		method: 'GET',
-		mode: 'cors',
-		credentials: 'include'
-	});
-}
-
-function getUrlForHttpReq(timeStamp, userName, isInView, pose, emotion) {
-	let reqUrl = WEB_APP_URL;
-
-	reqUrl += '?';
-	reqUrl += `timeStamp=${timeStamp}`
-	reqUrl += '&';
-	reqUrl += `userName=${userName}`;
-	reqUrl += '&';
-	reqUrl += `isInView=${isInView}`;
-	reqUrl += '&';
-	reqUrl += `pose=${pose}`;
-	reqUrl += '&';
-	reqUrl += `emotion=${emotion}`;
-
-	return reqUrl;
+function isTeamInView(groupName) {
+	var teamMembersId = getTeamMembersId(groupName);
+	let teamStatus = [];
+	for (let i = 0; i < teamMembersId.length; i++) {
+		teamStatus.push(isUserInView(teamMembersId[i]));
+	}
+	console.log('team status: (' + teamMembersId + ') = (' + teamStatus + ')');
+	if (!teamStatus){
+		var isReady = teamStatus.reduce((sum, next) => sum && next, true);
+		if (isReady) {
+			alert('The team is ready!');
+		}
+	}
 }
 
 function drawSkeltonOnCanvas(pose) {
