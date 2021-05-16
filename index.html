@@ -9,6 +9,10 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<!-- Firebase -->
+	<script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-database.js"></script>
+
 	<meta charset="UTF-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,31 +23,8 @@
 		<video id="video" width="1080" height="720" autoplay playsinline style="display: none"></video>
 		<canvas id="canvas" width="1080" height="720"></canvas>
 	</div>
-
-	<!-- Firebase -->
-	<!-- The core Firebase JS SDK is always required and must be listed first -->
-	<script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-app.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-database.js"></script>
-
-	<!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
-
-	<script>
-		// Your web app's Firebase configuration
-		var firebaseConfig = {
-			apiKey: "AIzaSyB1MW03acUH6ezwQyL6UqRJvsxuBz4MWbo",
-			authDomain: "stat-e02c3.firebaseapp.com",
-			databaseURL: "https://stat-e02c3-default-rtdb.asia-southeast1.firebasedatabase.app",
-			projectId: "stat-e02c3",
-			storageBucket: "stat-e02c3.appspot.com",
-			messagingSenderId: "184126002153",
-			appId: "1:184126002153:web:c396183779494a56c3b178"
-		};
-		// Initialize Firebase
-		firebase.initializeApp(firebaseConfig);
-		console.log("firebase initillized: ", firebaseConfig);
-	</script>
 </body>
+<script src="src/firebase.js"></script>
 <script src="src/pose.js"></script>
 <script src="src/emotion.js"></script>
 <script src="src/utils.js"></script>

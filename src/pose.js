@@ -40,69 +40,6 @@ async function estimatePoseOnVideo(videoElement) {
 	isTeamInView('stat-dev');
 }
 
-function pushStatus(groupId, userId, isInView, pose, emotion) {
-	const timestamp = new Date().getTime();
-	var statusId = 's' + timestamp;
-	var ref = firebase.database().ref('status/' + groupId + '/' + statusId);
-	ref.set({
-		name: userId,
-		isInView: isInView,
-		timestamp: timestamp,
-		emotion: emotion,
-		pose: pose
-	});
-}
-
-function pushPresentStatus(userId, isInView, pose, emotion) {
-	const timestamp = new Date().getTime();
-	firebase.database().ref('status-present/' + userId).set({
-		isInView: isInView,
-		timestamp: timestamp,
-		emotion: emotion,
-		pose: pose
-	});
-}
-
-function isUserInView(userId) {
-	let lastUpdatedTS = null;
-	const now = new Date().getTime();
-	var ref = firebase.database().ref('status-present/' + userId + '/timestamp');
-	ref.on('value', (snapshot) => {
-		lastUpdatedTS = snapshot.val();
-	})
-	if (now - lastUpdatedTS < 60000){
-		return true;
-	}
-	return false;
-}
-
-function getTeamMembersId(groupId) {
-	let teamMembersId = [];
-	var ref = firebase.database().ref('groups/'+groupId+'/members')
-	ref.orderByValue().on("value", function(snapshot) {
-		snapshot.forEach(function(data) {
-			teamMembersId.push(data.key);
-		});
-	});
-	// console.log(teamMembersId.length + ' users found in ' + groupId + ', with id: ' + teamMembersId);
-	return teamMembersId;
-}
-
-function isTeamInView(groupId) {
-	var teamMembersId = getTeamMembersId(groupId);
-	let teamStatus = [];
-	for (let i = 0; i < teamMembersId.length; i++) {
-		teamStatus.push(isUserInView(teamMembersId[i]));
-	}
-	console.log('team status: (' + teamMembersId + ') = (' + teamStatus + ')');
-	if (!teamStatus){
-		var isReady = teamStatus.reduce((sum, next) => sum && next, true);
-		if (isReady) {
-			alert('The team is ready!');
-		}
-	}
-}
-
 function drawSkeltonOnCanvas(pose) {
 	const ctx = canvas.getContext('2d');
 
