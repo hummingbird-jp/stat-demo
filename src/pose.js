@@ -1,4 +1,5 @@
 const USER_NAME = 'rsuda';
+const GROUP_ID = 'stat-dev';
 let SECONDS_YOU_STAYED_IN_VIEW = 0;
 // async functionにPromise以外を返させる方法がわからなかったので、計算結果をとりあえずここに入れておく
 let EMOTION = '-';
@@ -31,19 +32,32 @@ async function estimatePoseOnVideo(videoElement) {
 	}
 	// sendHttpReq(userName, isInView, result, EMOTION);
 	if (SECONDS_YOU_STAYED_IN_VIEW > 10) {
-		writeStatusData(userName,isInView,result,EMOTION);
+		pushPresentStatus(userName,isInView,result,EMOTION);
+		pushStatus(GROUP_ID, userName, isInView, result, EMOTION);
 		SECONDS_YOU_STAYED_IN_VIEW = 0;
 		console.log(`SECONDS_YOU_STAYED_IN_VIEW has been reset.`);
 	}
 	isTeamInView('stat-dev');
 }
 
-function writeStatusData(userId, isInView, pose, emotion) {
+function pushStatus(groupId, userId, isInView, pose, emotion) {
 	const timestamp = new Date().getTime();
-	console.log(timestamp);
-	firebase.database().ref('status-present/' + userId).set({
-		timestamp: timestamp,
+	var statusId = 's' + timestamp;
+	var ref = firebase.database().ref('status/' + groupId + '/' + statusId);
+	ref.set({
+		name: userId,
 		isInView: isInView,
+		timestamp: timestamp,
+		emotion: emotion,
+		pose: pose
+	});
+}
+
+function pushPresentStatus(userId, isInView, pose, emotion) {
+	const timestamp = new Date().getTime();
+	firebase.database().ref('status-present/' + userId).set({
+		isInView: isInView,
+		timestamp: timestamp,
 		emotion: emotion,
 		pose: pose
 	});
@@ -62,20 +76,20 @@ function isUserInView(userId) {
 	return false;
 }
 
-function getTeamMembersId(groupName) {
+function getTeamMembersId(groupId) {
 	let teamMembersId = [];
-	var ref = firebase.database().ref('groups/'+groupName+'/members')
+	var ref = firebase.database().ref('groups/'+groupId+'/members')
 	ref.orderByValue().on("value", function(snapshot) {
 		snapshot.forEach(function(data) {
 			teamMembersId.push(data.key);
 		});
 	});
-	// console.log(teamMembersId.length + ' users found in ' + groupName + ', with id: ' + teamMembersId);
+	// console.log(teamMembersId.length + ' users found in ' + groupId + ', with id: ' + teamMembersId);
 	return teamMembersId;
 }
 
-function isTeamInView(groupName) {
-	var teamMembersId = getTeamMembersId(groupName);
+function isTeamInView(groupId) {
+	var teamMembersId = getTeamMembersId(groupId);
 	let teamStatus = [];
 	for (let i = 0; i < teamMembersId.length; i++) {
 		teamStatus.push(isUserInView(teamMembersId[i]));
