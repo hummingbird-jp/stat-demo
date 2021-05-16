@@ -11,7 +11,9 @@ function main() {
 	const updateInterval = 2000;
 	const showRawVideo = () => { canvas.getContext("2d").drawImage(videoElement, 0, 0, 1080, 720) };
 	const execPoseNet = () => { estimatePoseOnVideo(videoElement) };
+	const execShowStatus = () => { showTeamStatus('stat-dev') };
 
 	setInterval(showRawVideo, 1000 / 30); // 30fpsで元動画を表示
 	setInterval(execPoseNet, updateInterval);
+	setInterval(execShowStatus, updateInterval);
 }

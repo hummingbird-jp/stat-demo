@@ -31,7 +31,7 @@ async function estimatePoseOnVideo(videoElement) {
 		console.log(`emotion in estimatePoseOnVideo(): ${EMOTION}`);
 	}
 	// sendHttpReq(userName, isInView, result, EMOTION);
-	if (SECONDS_YOU_STAYED_IN_VIEW > 10) {
+	if (SECONDS_YOU_STAYED_IN_VIEW > 5) {
 		pushPresentStatus(userName,isInView,result,EMOTION);
 		pushStatus(GROUP_ID, userName, isInView, result, EMOTION);
 		SECONDS_YOU_STAYED_IN_VIEW = 0;

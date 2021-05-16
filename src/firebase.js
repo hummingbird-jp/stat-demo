@@ -36,16 +36,20 @@ function pushPresentStatus(userId, isInView, pose, emotion) {
 }
 
 function isUserInView(userId) {
-    let lastUpdatedTS = null;
+    let bool = null,
+        timestamp = null,
+        since = null;
     const now = new Date().getTime();
     var ref = firebase.database().ref('status-present/' + userId + '/timestamp');
     ref.on('value', (snapshot) => {
-        lastUpdatedTS = snapshot.val();
+        timestamp = snapshot.val();
     })
-    if (now - lastUpdatedTS < 60000) {
-        return true;
-    }
-    return false;
+    since = now - timestamp;
+    bool = since < 60000
+    return {
+        bool,
+        since
+    };
 }
 
 function getTeamMembersId(groupId) {
@@ -60,17 +64,67 @@ function getTeamMembersId(groupId) {
     return teamMembersId;
 }
 
+function getUserNameById(userId) {
+    var userName = null;
+    firebase.database().ref('users/' + userId).on("value", (snapshot) => {
+        var result = snapshot.val();
+        userName = result.name;
+    })
+    return userName;
+}
+
 function isTeamInView(groupId) {
     var teamMembersId = getTeamMembersId(groupId);
     let teamStatus = [];
     for (let i = 0; i < teamMembersId.length; i++) {
-        teamStatus.push(isUserInView(teamMembersId[i]));
+        result = isUserInView(teamMembersId[i]);
+        teamStatus.push(result.bool);
     }
-    console.log('team status: (' + teamMembersId + ') = (' + teamStatus + ')');
+    // console.log('team status: (' + teamMembersId + ') = (' + teamStatus + ')');
     if (!teamStatus) {
         var isReady = teamStatus.reduce((sum, next) => sum && next, true);
         if (isReady) {
             alert('The team is ready!');
         }
+    }
+}
+
+function showTeamStatus(groupId) {
+    clearBox('statusView');
+    var teamMembersId = getTeamMembersId(groupId);
+    if (teamMembersId[0]) {
+        var tbl = document.getElementById('statusView')
+        var tblBody = document.createElement("tbody");
+        for (var i = 0; i < teamMembersId.length; i++) {
+            var row = document.createElement("tr");
+
+            var userName = getUserNameById(teamMembersId[i]);
+            var cell = document.createElement("td");
+            var cellText = document.createTextNode(userName);
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+
+            var statusObj = null;
+            firebase.database().ref('status-present/' + teamMembersId[i]).on("value", (snapshot) => {
+                statusObj = snapshot.val();
+            });
+
+            var result = isUserInView(teamMembersId[i]);
+            var lastMinInView = timeConvert(result.since) + ' ago'
+            if (result.bool) {
+                var showContent = [lastMinInView, statusObj.emotion, statusObj.pose];
+            } else {
+                var showContent = [lastMinInView];
+            }
+            for (var j = 0; j < showContent.length; j++) {
+                var cell = document.createElement("td");
+                var cellText = document.createTextNode(showContent[j]);
+                cell.appendChild(cellText);
+                row.appendChild(cell);
+            }
+            tblBody.appendChild(row);
+        }
+        tbl.appendChild(tblBody);
+        tbl.setAttribute("border", "2");
     }
 }
